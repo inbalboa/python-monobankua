@@ -6,7 +6,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='monobankua',
-    version='0.0.1',
+    version='0.0.3',
     author='Sergey Shlyapugin',
     author_email='shlyapugin@gmail.com',
     description='Monobank.ua API client',
@@ -15,7 +15,7 @@ setuptools.setup(
     url='https://github.com/inbalboa/python-monobankua',
     packages=setuptools.find_packages(),
     install_requires=['requests>=2.21,<3.0'],
-    python_requires='>=3.6,<4.0',
+    python_requires='>=3.7,<4.0',
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
