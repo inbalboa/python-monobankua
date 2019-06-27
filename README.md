@@ -1,6 +1,6 @@
-# python-monobankua
+# [python-monobankua](https://pypi.org/project/monobankua/)
 
-Python client library for [Monobank](https://monobank.ua/) [API](https://api.monobank.ua/docs/). https://pypi.org/project/monobankua/
+Python client library for [Monobank](https://monobank.ua/) [API](https://api.monobank.ua/docs/).
 
 ## Installation
 
