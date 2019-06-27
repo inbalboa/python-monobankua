@@ -15,7 +15,7 @@ setuptools.setup(
     url='https://github.com/inbalboa/python-monobankua',
     packages=setuptools.find_packages(),
     install_requires=['requests>=2.21,<3.0'],
-    python_requires:='>=3.6,<4.0',
+    python_requires='>=3.6,<4.0',
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
