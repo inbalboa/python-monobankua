@@ -6,7 +6,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='monobankua',
-    version='0.0.3',
+    version='0.0.4',
     author='Sergey Shlyapugin',
     author_email='shlyapugin@gmail.com',
     description='Monobank.ua API client',

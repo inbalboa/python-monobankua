@@ -52,7 +52,7 @@ class Monobank:
  
         @property
         def datetime(self):
-            return datetime.utcfromtimestamp(self.date)
+            return datetime.fromtimestamp(self.date)
 
         def __str__(self):
             rate = {
@@ -94,7 +94,7 @@ class Monobank:
  
         @property
         def datetime(self):
-            return datetime.utcfromtimestamp(self.time)
+            return datetime.fromtimestamp(self.time)
  
         @property
         def income(self):
