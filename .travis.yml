@@ -11,4 +11,4 @@ deploy:
   skip_existing: true
   on:
     branch: master
-script: pytest
+script: true
