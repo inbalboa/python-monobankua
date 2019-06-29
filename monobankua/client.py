@@ -32,7 +32,7 @@ class Monobank:
             980: Currency(980, 'UAH', '₴')
         }
         return currencies.get(currency_code, Currency(currency_code, str(currency_code), str(currency_code)))
-    
+
     @dataclass
     class CurrencyInfo:
         currencyCodeA: int
@@ -41,15 +41,15 @@ class Monobank:
         rateSell: int = 0
         rateBuy: int = 0
         rateCross: int = 0
- 
+
         @property
         def currencyA(self):
             return Monobank._currency_helper(self.currencyCodeA)
- 
+
         @property
         def currencyB(self):
             return Monobank._currency_helper(self.currencyCodeB)
- 
+
         @property
         def datetime(self):
             return datetime.fromtimestamp(self.date)
@@ -70,7 +70,7 @@ class Monobank:
         cashbackType: str
         balance: int
         creditLimit: int
- 
+
         @property
         def currency(self):
             return Monobank._currency_helper(self.currencyCode)
@@ -91,19 +91,19 @@ class Monobank:
         commissionRate: int
         cashbackAmount: int
         balance: int
- 
+
         @property
         def datetime(self):
             return datetime.fromtimestamp(self.time)
- 
+
         @property
         def income(self):
             return self.amount > 0
- 
+
         @property
         def currency(self):
             return Monobank._currency_helper(self.currencyCode)
- 
+
         @property
         def category(self):
             return self._mcc_helper(self.mcc)
