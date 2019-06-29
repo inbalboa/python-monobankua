@@ -1,5 +1,5 @@
-# [python-monobankua](https://pypi.org/project/monobankua/)
-
+# [Python-monobankua](https://pypi.org/project/monobankua/)
+[![Build Status](https://travis-ci.org/inbalboa/python-monobankua.svg?branch=master)](https://travis-ci.org/inbalboa/python-monobankua)
 Python client library for [Monobank](https://monobank.ua/) [API](https://api.monobank.ua/docs/).
 
 ## Installation
