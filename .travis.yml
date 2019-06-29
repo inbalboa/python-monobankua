@@ -7,6 +7,8 @@ deploy:
   user: inbalboa
   password:
     secure: "iPwyc55Ld74imikdSF5Mf1OvgD7poe4wUpxdwna3TzPL4Jn3pYf4xjIFd6H0hujH7Wo6UTEQyZEddSpd+zUpqsUyUBcI+eubNz5i1JTy2Wry/ntPdVUhvboEUMiGRcPaxEvaOc669HGp7SQT8SLVpGM6lITEJ0RDAMKwC7mAtHkY4HnE9+Pd9lZdZaoAVBJVHDXOa9kFuG+s7mA46+dIhgPa2LQE3gvQ9G2j8QRoChN2uYEaS0D9Rl60b2coGxkT6Ra6Y4PyuEc1i1lhnwxQI8e28dWdzn86EDiZedz1kC4SlNb7nJxjN3BDku17Lzy78NPWOVqYOM0vy7L92ddNw8NIvGQw1AYCDRr+YjsxV31n+9W/tHx/gWHda17Ho+/XsXVJzSWlqBgNY8Ny2ZPOdCXSqVSwHRwBO3vzB5icnBa3R+m8uLo0wKDkHWjMIEI5dC3t2arz3tZ9wQepUr9HQI/UQso42pOK/zYmbp66PKdMi55s6Qyl0dBZJadJKceoyYpE7OF0wOFKINWyFnyV/GYJtBsFe6VfT6J2BRK9Q5YzTlrag9gKwcvnPZAg99ynNwRNyR8j+cZ6kMYO0h89q8Oi9H4t+UQzrFnyB7Q8bo/6HipvYG6vUsq1EshLQx+M6PSm4Uq3slEyxOxtPMbhZXHbZffqR0DPYPC2+OUAx5w="
+  distributions: sdist bdist_wheel
+  skip_existing: true
   on:
     branch: master
 script: pytest
