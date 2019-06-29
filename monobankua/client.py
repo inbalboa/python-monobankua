@@ -151,7 +151,8 @@ class Monobank:
             symbol = '➕️' if self.income else '➖️'
             cashback = f', кешбек {self.cashbackAmount / 100} {currency}' if self.cashbackAmount else ''
             commission = f', комісія {self.commissionRate / 100} {currency}' if self.commissionRate else ''
-            return f'{symbol} {self.datetime} {self.category.symbol} '\
+            symbol = '💸' if self.income else self.category.symbol
+            return f'{symbol} {self.datetime} {symbol} '\
                 f'{self.description}: {amount}{cashback}{commission}. Баланс: {balance}'
 
     def __init__(self, token):
