@@ -76,7 +76,7 @@ class Monobank:
             return Monobank._currency_helper(self.currencyCode)
 
         def __str__(self):
-            return f'{self.balance / 100} {self.currency.symbol}'
+            return f'{self.balance // 100} {self.currency.symbol}'
 
     @dataclass
     class Statement:
