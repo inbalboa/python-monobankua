@@ -22,7 +22,7 @@ pip3 install monobankua
 from datetime import datetime
 from monobankua import Monobank
   
-TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+TOKEN = "xxxxxxxxxxxxxxxxxxxxx"
 
 monobank = Monobank(TOKEN)
 
@@ -36,4 +36,7 @@ for account in accounts:
     print(f'{account.currency.name}: {account}')
     statements = monobank.statements(account.id, datetime(2019, 6, 25))
     print(*statements, sep='\n')
+    
+currencies_info = monobank.currencies_info()
+print(*currencies_info, sep='\n')
 ```

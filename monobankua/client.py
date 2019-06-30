@@ -161,10 +161,10 @@ class Monobank:
 
     def __init__(self, token):
         self.token = token
-        
+
     def _get_url(self, path):
         return f'{self.API}{path}'
-        
+
     def _get_header(self):
         header = {
             'X-Token': self.token
