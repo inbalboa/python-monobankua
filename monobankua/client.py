@@ -161,9 +161,18 @@ class Monobank:
 
     def __init__(self, token):
         self.token = token
+        
+    def _get_url(self, path):
+        return f'{self.API}{path}'
+        
+    def _get_header(self):
+        header = {
+            'X-Token': self.token
+        }
+        return header
 
     def _make_request(self, path):
-        response = requests.get(f'{self.API}{path}', headers={'x-token': self.token})
+        response = requests.get(self._get_url(path), headers=self._get_header)
         raw_data = response.json()
         status_code = response.status_code
         if status_code != requests.codes.ok:
