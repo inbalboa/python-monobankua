@@ -172,7 +172,7 @@ class Monobank:
         return header
 
     def _make_request(self, path):
-        response = requests.get(self._get_url(path), headers=self._get_header)
+        response = requests.get(self._get_url(path), headers=self._get_header())
         raw_data = response.json()
         status_code = response.status_code
         if status_code != requests.codes.ok:
