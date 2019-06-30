@@ -10,6 +10,10 @@ class MonobankError(Exception):
     pass
 
 
+class MonobankRateLimitError(Exception):
+    pass
+
+
 class Monobank:
     API = 'https://api.monobank.ua'
     
@@ -161,9 +165,14 @@ class Monobank:
     def _make_request(self, path):
         response = requests.get(f'{self.API}{path}', headers={'x-token': self.token})
         raw_data = response.json()
-        if response.status_code != requests.codes.ok:
+        status_code = response.status_code
+        if status_code != requests.codes.ok:
             error_description = raw_data.get('errorDescription', str(raw_data))
-            raise MonobankError(f'Error {response.status_code}: {error_description}')
+            message = f'Error {status_code}: {error_description}'
+            if status_code == requests.codes.too_many_requests:
+                raise MonobankRateLimitError(message)
+            else:
+                raise MonobankError(message)
         return raw_data
 
     def currencies_info(self):
