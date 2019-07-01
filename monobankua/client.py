@@ -156,7 +156,8 @@ class Monobank:
             cashback = f', кешбек {self.cashbackAmount / 100} {currency}' if self.cashbackAmount else ''
             commission = f', комісія {self.commissionRate / 100} {currency}' if self.commissionRate else ''
             category_symbol = '💸' if self.income else self.category.symbol
-            return f'{symbol} {self.datetime} {category_symbol} '\
+            datetime = self.datetime.strftime("%d.%m.%Y %H:%M")
+            return f'{symbol} {datetime} {category_symbol} '\
                 f'{self.description}: {amount}{cashback}{commission}. Баланс: {balance}'
 
     def __init__(self, token):
@@ -166,10 +167,9 @@ class Monobank:
         return f'{self.API}{path}'
 
     def _get_header(self):
-        header = {
+        return {
             'X-Token': self.token
         }
-        return header
 
     def _make_request(self, path):
         response = requests.get(self._get_url(path), headers=self._get_header())
