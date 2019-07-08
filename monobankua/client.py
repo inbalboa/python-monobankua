@@ -60,9 +60,9 @@ class Monobank:
 
         def __str__(self):
             rate = {
-                'продаж': f'{self.rateSell}' if self.rateSell else '',
-                'купівля': f'{self.rateBuy}' if self.rateBuy else '',
-                'крос-курс': f'{self.rateCross}' if self.rateCross else ''
+                'продаж': self.rateSell,
+                'купівля': self.rateBuy,
+                'крос-курс': self.rateCross
             }
             rate_view = ', '.join([f'{k} {v}' for k, v in rate.items() if v])
             return f'{self.datetime} {self.currencyA.name} -> {self.currencyB.name}: {rate_view}'
