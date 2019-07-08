@@ -156,7 +156,7 @@ class Monobank:
             cashback = f', кешбек {self.cashbackAmount / 100} {currency}' if self.cashbackAmount else ''
             commission = f', комісія {self.commissionRate / 100} {currency}' if self.commissionRate else ''
             category_symbol = '💸' if self.income else self.category.symbol
-            datetime = self.datetime.strftime("%d.%m.%Y %H:%M")
+            datetime = self.datetime.strftime('%d.%m.%Y %H:%M')
             return f'{symbol} {datetime} {category_symbol} '\
                 f'{self.description}: {amount}{cashback}{commission}. Баланс: {balance}'
 
