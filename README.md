@@ -1,5 +1,5 @@
 # Python-monobankua
-[![Build Status](https://travis-ci.org/inbalboa/python-monobankua.svg?branch=master)](https://travis-ci.org/inbalboa/python-monobankua) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![PyPI](https://img.shields.io/pypi/v/monobankua.svg) [![Build Status](https://travis-ci.org/inbalboa/python-monobankua.svg?branch=master)](https://travis-ci.org/inbalboa/python-monobankua) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 Python client library for [Monobank](https://monobank.ua/) [API](https://api.monobank.ua/docs/).
 
