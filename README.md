@@ -29,8 +29,9 @@ monobank = Monobank(TOKEN)
 currencies_info = monobank.currencies_info()
 print(*currencies_info, sep='\n')
 
-client_name, accounts = monobank.client_info()
+client_name, webhook_url, accounts = monobank.client_info()
 print(client_name)
+print(webhook_url)
 
 for account in accounts:
     print(f'{account.currency.name}: {account}')

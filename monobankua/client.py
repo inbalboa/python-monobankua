@@ -171,8 +171,11 @@ class Monobank:
             'X-Token': self.token
         }
 
-    def _make_request(self, path):
-        response = requests.get(self._get_url(path), headers=self._get_header())
+    def _make_request(self, path, body=None):
+        if body:
+            response = requests.post(self._get_url(path), headers=self._get_header(), json=body)
+        else:
+            response = requests.get(self._get_url(path), headers=self._get_header())
         raw_data = response.json()
         status_code = response.status_code
         if status_code != requests.codes.ok:
@@ -192,8 +195,9 @@ class Monobank:
     def client_info(self):
         client_info_data = self._make_request('/personal/client-info')
         client_name = client_info_data['name']
+        webhook_url = client_info_data['webHookUrl']
         accounts = [self.Account(**x) for x in client_info_data['accounts']]
-        return client_name, accounts
+        return client_name, webhook_url, accounts
 
     def statements(self, account_id, date_from, date_to=None):
         date_from_ = date_from.strftime('%s')
@@ -201,3 +205,7 @@ class Monobank:
         statements_data = self._make_request(f'/personal/statement/{account_id}/{date_from_}/{date_to_}')
         statements = [self.Statement(**x) for x in sorted(statements_data, key=lambda x: x['time'])]
         return statements
+
+    def set_webhook(self, webhook_url):
+        self._make_request('/personal/webhook', {'webHookUrl': webhook_url})
+
