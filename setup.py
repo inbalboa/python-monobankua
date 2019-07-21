@@ -1,20 +1,30 @@
 import setuptools
 
-with open('README.md', 'r') as fh:
-    long_description = fh.read()
+def long_description():
+    long_description = ''
+    with open('README.md', 'r') as ld:
+        long_description = ld.read()
+    return long_description
+
+
+def find_requires():
+    requirements = []
+    with open('requirements.txt', 'r') as reqs:
+        requirements = reqs.readlines()
+    return requirements
 
 
 setuptools.setup(
     name='monobankua',
-    version='0.1.9',
+    version='0.2.0',
     author='Sergey Shlyapugin',
     author_email='shlyapugin@gmail.com',
     description='Monobank.ua API client',
-    long_description=long_description,
+    long_description=find_long_description(),
     long_description_content_type='text/markdown',
     url='https://github.com/inbalboa/python-monobankua',
     packages=setuptools.find_packages(),
-    install_requires=['requests>=2.21,<3.0'],
+    install_requires=find_requires(),
     python_requires='>=3.7,<4.0',
     classifiers=[
         'Programming Language :: Python :: 3',
