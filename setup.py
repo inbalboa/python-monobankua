@@ -20,7 +20,7 @@ setuptools.setup(
     author='Sergey Shlyapugin',
     author_email='shlyapugin@gmail.com',
     description='Monobank.ua API client',
-    long_description=find_long_description(),
+    long_description=long_description(),
     long_description_content_type='text/markdown',
     url='https://github.com/inbalboa/python-monobankua',
     packages=setuptools.find_packages(),
