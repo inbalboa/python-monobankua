@@ -195,7 +195,7 @@ class Monobank:
     def client_info(self):
         client_info_data = self._make_request('/personal/client-info')
         client_name = client_info_data['name']
-        webhook_url = client_info_data['webHookUrl']
+        webhook_url = client_info_data.get('webHookUrl', '')
         accounts = [self.Account(**x) for x in client_info_data['accounts']]
         return client_name, webhook_url, accounts
 
