@@ -14,9 +14,9 @@ class MonobankRateLimitError(Exception):
     pass
 
 
-class Monobank:
+class MonobankBase:
     API = 'https://api.monobank.ua'
-    
+
     @staticmethod
     def _currency_helper(currency_code):
         Currency = namedtuple('Currency', ('code', 'name', 'symbol'))
@@ -160,16 +160,11 @@ class Monobank:
             return f'{symbol} {datetime} {category_symbol} '\
                 f'{self.description}: {amount}{cashback}{commission}. Баланс: {balance}'
 
-    def __init__(self, token):
-        self.token = token
-
     def _get_url(self, path):
         return f'{self.API}{path}'
 
     def _get_header(self):
-        return {
-            'X-Token': self.token
-        }
+        raise NotImplementedError('Please, use Monobank or MonobankCorporate class')
 
     def _make_request(self, path, body=None):
         if body:
@@ -209,3 +204,51 @@ class Monobank:
     def set_webhook(self, webhook_url):
         self._make_request('/personal/webhook', {'webHookUrl': webhook_url})
 
+
+class Monobank(MonobankBase):
+    def __init__(self, token):
+        self.token = token
+
+    def _get_header(self):
+        return {
+            'X-Token': self.token,
+        }
+
+
+class MonobankCorporate(MonobankBase):
+    def __init__(self, request_id, private_key):
+        self.request_id = request_id
+        self.key = SignKey(private_key)
+        
+    def _get_headers(self, url):
+        headers = {
+            'X-Key-Id': self.key.key_id(),
+            'X-Time': str(to_timestamp(datetime.now())),
+            'X-Request-Id': self.request_id,
+        }
+        data = headers['X-Time'] + headers['X-Request-Id'] + url
+        headers['X-Sign'] = self.key.sign(data)
+        return headers
+
+    def access_request(permissions, private_key, webhook_url=None):
+        key = SignKey(private_key)
+        headers = {
+            'X-Key-Id': key.key_id(),
+            'X-Time': str(to_timestamp(datetime.now())),
+            'X-Permissions': permissions,
+        }
+        if callback_url:
+            headers['X-Callback'] = callback_url
+        path = '/personal/auth/request'
+        sign_str = headers['X-Time'] + headers['X-Permissions'] + path
+        headers['X-Sign'] = key.sign(sign_str)
+        return api_request('POST', path, headers=headers)
+
+    def access_check(self):
+        try:
+            self._make_request('/personal/auth/request')
+            return True
+        except monobank.Error as e:
+            if e.response.status_code == 401:
+                return False
+            raise
