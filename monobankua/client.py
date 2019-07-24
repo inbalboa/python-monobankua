@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from abc import ABC, abstractmethod
 from collections import namedtuple
 from dataclasses import dataclass
 from datetime import datetime
@@ -14,7 +15,11 @@ class MonobankRateLimitError(Exception):
     pass
 
 
-class MonobankBase:
+class MonobankUnauthorizedError(Exception):
+    pass
+
+
+class MonobankBase(ABC):
     API = 'https://api.monobank.ua'
 
     @staticmethod
@@ -163,14 +168,15 @@ class MonobankBase:
     def _get_url(self, path):
         return f'{self.API}{path}'
 
-    def _get_header(self):
-        raise NotImplementedError('Please, use Monobank or MonobankCorporate class')
+    @abstractmethod
+    def _get_header(self, path, public=False):
+        pass
 
-    def _make_request(self, path, body=None):
-        if body:
-            response = requests.post(self._get_url(path), headers=self._get_header(), json=body)
-        else:
-            response = requests.get(self._get_url(path), headers=self._get_header())
+    def _make_request(self, path, method=None, body=None, extra_header=None, public=False):
+        headers = self._get_header(path, public=public)
+        if extra_header:
+            headers.update(extra_header)
+        response = requests.request(method if method else 'GET', self._get_url(path), headers=headers, json=body)
         raw_data = response.json()
         status_code = response.status_code
         if status_code != requests.codes.ok:
@@ -178,12 +184,14 @@ class MonobankBase:
             message = f'Error {status_code}: {error_description}'
             if status_code == requests.codes.too_many_requests:
                 raise MonobankRateLimitError(message)
+            elif status_code == requests.codes.unauthorized:
+                raise MonobankUnauthorizedError(message)
             else:
                 raise MonobankError(message)
         return raw_data
 
     def currencies_info(self):
-        currency_info_data = self._make_request('/bank/currency')
+        currency_info_data = self._make_request('/bank/currency', public=True)
         currencies_info = [self.CurrencyInfo(**x) for x in currency_info_data]
         return currencies_info
 
@@ -195,60 +203,66 @@ class MonobankBase:
         return client_name, webhook_url, accounts
 
     def statements(self, account_id, date_from, date_to=None):
+        if date_to and date_from > date_to:
+            raise ValueError('Error: begin date bigger than end date')
+
         date_from_ = date_from.strftime('%s')
         date_to_ = date_to.strftime('%s') if date_to else ''
         statements_data = self._make_request(f'/personal/statement/{account_id}/{date_from_}/{date_to_}')
         statements = [self.Statement(**x) for x in sorted(statements_data, key=lambda x: x['time'])]
         return statements
 
-    def set_webhook(self, webhook_url):
-        self._make_request('/personal/webhook', {'webHookUrl': webhook_url})
-
 
 class Monobank(MonobankBase):
-    def __init__(self, token):
+    def __init__(self, token=None):
         self.token = token
 
-    def _get_header(self):
-        return {
-            'X-Token': self.token,
+    def _get_header(self, path=None, public=False):
+        return {} if public else {
+            'X-Token': self.token
         }
+
+    def set_webhook(self, webhook_url):
+        self._make_request('/personal/webhook', method='POST', body={'webHookUrl': webhook_url})
 
 
 class MonobankCorporate(MonobankBase):
-    def __init__(self, request_id, private_key):
-        self.request_id = request_id
+    def __init__(self, private_key, request_id=None):
         self.key = SignKey(private_key)
-        
-    def _get_headers(self, url):
+        self.request_id = request_id
+        self.accept_url = None
+
+    def _get_header(self, path, public=False):
+        if public:
+            return {}
+
         headers = {
-            'X-Key-Id': self.key.key_id(),
-            'X-Time': str(to_timestamp(datetime.now())),
-            'X-Request-Id': self.request_id,
+            'X-Key-Id': self.key.key_id,
+            'X-Time': datetime.now().strftime('%s')
         }
-        data = headers['X-Time'] + headers['X-Request-Id'] + url
-        headers['X-Sign'] = self.key.sign(data)
+        if self.request_id:
+            headers['X-Request-Id'] = self.request_id
+        str_to_sign = headers['X-Time'] + headers.get('X-Request-Id', '') + path
+        headers['X-Sign'] = self.key.sign(str_to_sign)            
         return headers
 
     def access_request(permissions, private_key, webhook_url=None):
-        key = SignKey(private_key)
         headers = {
-            'X-Key-Id': key.key_id(),
-            'X-Time': str(to_timestamp(datetime.now())),
-            'X-Permissions': permissions,
+            'X-Time': datetime.now().strftime('%s'),
+            'X-Permissions': permissions
         }
-        if callback_url:
-            headers['X-Callback'] = callback_url
+        if webhook_url:
+            headers['X-Callback'] = webhook_url
         path = '/personal/auth/request'
-        sign_str = headers['X-Time'] + headers['X-Permissions'] + path
-        headers['X-Sign'] = key.sign(sign_str)
-        return api_request('POST', path, headers=headers)
+        str_to_sign = headers['X-Time'] + headers['X-Permissions'] + path
+        headers['X-Sign'] = self.key.sign(str_to_sign)
+        raw_data = self._make_request(path, 'POST', extra_headers=headers)
+        self.request_id = raw_data['tokenRequestId']
+        self.accept_url = raw_data['acceptUrl']
 
     def access_check(self):
         try:
             self._make_request('/personal/auth/request')
-            return True
-        except monobank.Error as e:
-            if e.response.status_code == 401:
-                return False
-            raise
+        except MonobankUnauthorizedError as e:
+            return False
+        return True
