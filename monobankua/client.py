@@ -5,6 +5,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from datetime import datetime
 import requests
+from sign import SignKey
 
 
 class MonobankError(Exception):
@@ -243,10 +244,10 @@ class MonobankCorporate(MonobankBase):
         if self.request_id:
             headers['X-Request-Id'] = self.request_id
         str_to_sign = headers['X-Time'] + headers.get('X-Request-Id', '') + path
-        headers['X-Sign'] = self.key.sign(str_to_sign)            
+        headers['X-Sign'] = self.key.sign(str_to_sign)
         return headers
 
-    def access_request(permissions, private_key, webhook_url=None):
+    def access_request(self, permissions, private_key, webhook_url=None):
         headers = {
             'X-Time': datetime.now().strftime('%s'),
             'X-Permissions': permissions
@@ -263,6 +264,6 @@ class MonobankCorporate(MonobankBase):
     def access_check(self):
         try:
             self._make_request('/personal/auth/request')
-        except MonobankUnauthorizedError as e:
+        except MonobankUnauthorizedError:
             return False
         return True
