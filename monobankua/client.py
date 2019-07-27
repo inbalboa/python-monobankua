@@ -5,7 +5,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from datetime import datetime
 import requests
-from sign import SignKey
+from monobankua.sign import SignKey
 
 
 class MonobankError(Exception):
