@@ -12,6 +12,7 @@ pip3 install monobankua
 ## Requirements
 * python >= 3.7
 * requests >= 2.21
+* ecdsa >= 0.13.2
 
 ## Usage
 
