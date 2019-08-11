@@ -1,5 +1,8 @@
 # macOS crap
-.DS_Store
+.DS_Store/
+
+# images
+images/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
