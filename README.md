@@ -31,20 +31,20 @@ from monobankua import Monobank
 import MonobankError, MonobankRateLimitError, MonobankUnauthorizedError
 
 try:
-	currencies_info = Monobank.currencies_info() # you don't need token to get an exchange rates
-	print(*currencies_info, sep='\n')
-  
-	token = 'xxxxxxxxxxxxxxxxxxxxx'
-	monobank = Monobank(token)
+    currencies_info = Monobank.currencies_info() # you don't need token to get an exchange rates
+    print(*currencies_info, sep='\n')
 
-	client_name, webhook_url, accounts = monobank.client_info()
-	print(client_name)
-	print(webhook_url)
+    token = 'xxxxxxxxxxxxxxxxxxxxx'
+    monobank = Monobank(token)
 
-	for account in accounts:
-	    print(f'{account.currency.name}: {account}')
-	    statements = monobank.statements(account.id, (datetime.now() - timedelta(days=6)).date())
-	    print(*statements, sep='\n')
+    client_name, webhook_url, accounts = monobank.client_info()
+    print(client_name)
+    print(webhook_url)
+
+    for account in accounts:
+        print(f'{account.currency.name}: {account}')
+        statements = monobank.statements(account.id, (datetime.now() - timedelta(days=6)).date())
+        print(*statements, sep='\n')
 except MonobankRateLimitError:
 	print('Too many requests. Wait 1 minute, please')
 except MonobankUnauthorizedError as e:
