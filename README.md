@@ -55,7 +55,7 @@ except MonobankError as e:
 
 ### Corporate API
 
-Corporate API have the same methods as personal API, but doesn't have rate limitation.
+Corporate API has the same methods as personal API, but doesn't have rate limitation.
 
 Corporate API is the only way for non-personal use of open Monobank API.
 
