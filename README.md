@@ -27,8 +27,7 @@ Full personal API description see at https://api.monobank.ua/docs/
 
 ```python
 from datetime import datetime, timedelta
-from monobankua import Monobank
-import MonobankError, MonobankRateLimitError, MonobankUnauthorizedError
+from monobankua import Monobank, MonobankError, MonobankRateLimitError, MonobankUnauthorizedError
 
 try:
     currencies_info = Monobank.currencies_info() # you don't need token to get an exchange rates
