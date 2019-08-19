@@ -16,7 +16,7 @@ def find_requires():
 
 setuptools.setup(
     name='monobankua',
-    version='0.2.7',
+    version='0.2.8',
     author='Sergey Shlyapugin',
     author_email='shlyapugin@gmail.com',
     description='Monobank.ua API client',
