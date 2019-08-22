@@ -180,7 +180,7 @@ class MonobankBase(ABC):
     def _make_request(cls, path, method=None, headers=None, body=None):
         headers_ = dict(headers) if headers else {}
         headers_['User-Agent'] = cls.UA
-        response = requests.request(method if method else 'GET', cls._get_url(path), headers=headers_, json=body)
+        response = requests.request(method or 'GET', cls._get_url(path), headers=headers_, json=body)
         raw_data = response.json() if response.content else {}
         status_code = response.status_code
         if status_code != requests.codes.ok:
