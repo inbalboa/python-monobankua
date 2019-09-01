@@ -154,6 +154,12 @@ class MonobankBase(ABC):
                 return Category('Книги', '📚')
             elif mcc in (5992, 5193):
                 return Category('Квіти', '💐')
+            elif mcc == 4814:
+                return Category('Поповнення мобільного', '📞')
+            elif mcc == 4829:
+                return Category('Грошові перекази', '💸')
+            elif mcc == 4900:
+                return Category('Комунальні послуги', '🚰')
             else:
                 return Category('Інше', '❓')
 
