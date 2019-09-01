@@ -103,6 +103,7 @@ class MonobankBase(ABC):
         commissionRate: int
         cashbackAmount: int
         balance: int
+        comment: str = ''
 
         @property
         def datetime(self):
@@ -165,8 +166,9 @@ class MonobankBase(ABC):
             commission = f', комісія {self.commissionRate / 100} {currency}' if self.commissionRate else ''
             category_symbol = '💸' if self.income else self.category.symbol
             datetime = self.datetime.strftime('%d.%m.%Y %H:%M')
+            comment = f' «{self.comment}»' if self.comment else ''
             return f'{symbol} {datetime} {category_symbol} '\
-                f'{self.description}: {amount}{cashback}{commission}. Баланс: {balance}'
+                f'{self.description}{comment}: {amount}{cashback}{commission}. Баланс: {balance}'
 
     @classmethod
     def _get_url(cls, path):
