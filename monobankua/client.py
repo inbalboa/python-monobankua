@@ -88,7 +88,7 @@ class MonobankBase(ABC):
             return Monobank._currency_helper(self.currencyCode)
 
         def __str__(self):
-            return f'{self.balance // 100} {self.currency.symbol}'
+            return f'{self.balance // 100:g} {self.currency.symbol}'
 
     @dataclass
     class Statement:
@@ -165,16 +165,16 @@ class MonobankBase(ABC):
 
         def __str__(self):
             currency = self.currency.symbol
-            amount = f'{self.amount / 100} {currency}'
-            balance = f'{self.balance / 100} {currency}'
-            symbol = '➕️' if self.income else '➖️'
-            cashback = f', кешбек {self.cashbackAmount / 100} {currency}' if self.cashbackAmount else ''
-            commission = f', комісія {self.commissionRate / 100} {currency}' if self.commissionRate else ''
+            amount = f'{self.amount / 100:g} {currency}'
+            balance = f'{self.balance / 100:g} {currency}'
+            cashback = f', кешбек {self.cashbackAmount / 100:g} {currency}' if self.cashbackAmount else ''
+            commission = f', комісія {self.commissionRate / 100:g} {currency}' if self.commissionRate else ''
             category_symbol = '💸' if self.income else self.category.symbol
+            hold_symbol = '' if self.hold else '✓'
             datetime = self.datetime.strftime('%d.%m.%Y %H:%M')
             comment = (f' «{self.comment}»' if self.comment else '').replace('\n', ' ')
             description = self.description.replace('\n', ' ')
-            return f'{symbol} {datetime} {category_symbol} '\
+            return f'{datetime} {category_symbol}{hold_symbol} '\
                 f'{description}{comment}: {amount}{cashback}{commission}. Баланс: {balance}'
 
     @classmethod
@@ -187,7 +187,7 @@ class MonobankBase(ABC):
 
     @classmethod
     def _make_request(cls, path, method=None, headers=None, body=None):
-        headers_ = dict(headers) if headers else {}
+        headers_ = headers or {}
         headers_['User-Agent'] = cls.UA
         response = requests.request(method or 'GET', cls._get_url(path), headers=headers_, json=body)
         raw_data = response.json() if response.content else {}
