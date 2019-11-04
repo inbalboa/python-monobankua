@@ -13,7 +13,7 @@ class SignKey:
     def key_id(self):
         public_key = self.signing_key.get_verifying_key()
         uncompressed_public_key = bytearray([0x04]) + (bytearray(public_key.to_string()))
-        return hexlify(hashlib.sha1(uncompressed_public_key).digest())
+        return hexlify(hashlib.sha1(uncompressed_public_key).digest())  # noqa: DUO130
 
     def sign(self, for_sign):
         sign = self.signing_key.sign(for_sign.encode(), hashfunc=hashlib.sha256)
