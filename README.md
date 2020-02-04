@@ -41,7 +41,7 @@ try:
     print(webhook_url)
 
     for account in accounts:
-        print(f'{account.currency.name}: {account}')
+        print(f'{account.card}: {account}')
         statements = monobank.statements(account.id, (datetime.now() - timedelta(days=6)).date())
         print(*statements, sep='\n')
 except MonobankRateLimitError:
