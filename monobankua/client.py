@@ -179,7 +179,7 @@ class MonobankBase(ABC):
             datetime = self.datetime.strftime('%d.%m.%Y %H:%M')
             comment = (f' «{self.comment}»' if self.comment else '').replace('\n', ' ')
             description = self.description.replace('\n', ' ')
-            return f'{datetime} {category_symbol}{hold_symbol} '\
+            return f'{datetime} {category_symbol} '\
                 f'{description}{comment}: {amount}{cashback}{commission}. Баланс: {balance}'
 
     @classmethod
