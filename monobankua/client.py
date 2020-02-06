@@ -83,6 +83,7 @@ class MonobankBase(ABC):
         balance: int
         creditLimit: int
         maskedPan: str
+        type: str
 
         @property
         def currency(self):
