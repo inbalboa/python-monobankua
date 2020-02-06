@@ -176,7 +176,6 @@ class MonobankBase(ABC):
             cashback = f', кешбек {self.cashbackAmount / 100:g} {currency}' if self.cashbackAmount else ''
             commission = f', комісія {self.commissionRate / 100:g} {currency}' if self.commissionRate else ''
             category_symbol = '💸' if self.income else self.category.symbol
-            hold_symbol = '' if self.hold else '✓'
             datetime = self.datetime.strftime('%d.%m.%Y %H:%M')
             comment = (f' «{self.comment}»' if self.comment else '').replace('\n', ' ')
             description = self.description.replace('\n', ' ')
