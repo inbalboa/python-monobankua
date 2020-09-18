@@ -1,8 +1,8 @@
-TAG=`python setup.py --version`
+TAG=`python3 setup.py --version`
 
 lint:
 	@printf "==> linting...\n"
-	@python -m flake8 --select=DUO pymstodo
+	@python3 -m flake8 --select=DUO pymstodo
 
 tag:
 	@printf "==> tagging...\n"
