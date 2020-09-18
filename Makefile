@@ -6,10 +6,9 @@ lint:
 
 pub:
 	@printf "==> publishing...\n"
-	@git commit -m "v$(TAG)"
+	@git commit -am "v$(TAG)"
 	@git tag -a "v$(TAG)" -m "Release $(TAG)"
-	@git push origin "v$(TAG)"
-	@git push
+	@git push --atomic origin master "v$(TAG)"
 
 run: lint pub
 	@printf "\nPublished at %s\n\n" "`date`"
