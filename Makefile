@@ -11,6 +11,7 @@ tag:
 pub:
 	@printf "==> git push...\n"
 	@git push origin "v$(TAG)"
+	@git push
 
 run: lint tag pub
 	@printf "\nPublished at %s\n\n" "`date`"
