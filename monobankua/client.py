@@ -110,6 +110,7 @@ class MonobankBase(ABC):
         commissionRate: int
         cashbackAmount: int
         balance: int
+        receiptId: str
         comment: str = ''
 
         @property
