@@ -103,6 +103,7 @@ class MonobankBase(ABC):
         time: int
         description: str
         mcc: int
+        originalMcc: int
         hold: bool
         amount: int
         operationAmount: int
