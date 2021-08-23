@@ -85,6 +85,7 @@ class MonobankBase(ABC):
         maskedPan: str
         type: str
         iban: str
+        sendId: str
 
         @property
         def currency(self):
@@ -93,6 +94,10 @@ class MonobankBase(ABC):
         @property
         def card(self):
             return f'{self.currency.name} {self.maskedPan[0]} {self.type}'
+
+        @property
+        def send_link(self):
+            return f'https://send.monobank.ua/{self.sendId}'
 
         def __str__(self):
             return f'{self.balance // 100:g} {self.currency.symbol}'
