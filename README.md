@@ -1,5 +1,5 @@
 # Python-monobankua
-[![PyPI](https://img.shields.io/pypi/v/monobankua.svg)](https://pypi.org/project/monobankua/) [![Build Status](https://travis-ci.com/inbalboa/python-monobankua.svg?branch=master)](https://travis-ci.com/inbalboa/python-monobankua) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![PyPI](https://img.shields.io/pypi/v/monobankua.svg)](https://pypi.org/project/monobankua/) [![Build Status](https://github.com/inbalboa/python-monobankua/actions/workflows/main.yml/badge.svg)](https://github.com/inbalboa/python-monobankua/actions/workflows/main.yml) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 Python client library for [Monobank](https://monobank.ua/) [API](https://api.monobank.ua/docs/).
 
@@ -10,7 +10,7 @@ pip3 install monobankua
 ```
 
 ## Requirements
-* python >= 3.7
+* python >= 3.10
 * requests >= 2.21
 * ecdsa >= 0.13.2
 
@@ -36,11 +36,11 @@ try:
     token = 'xxxxxxxxxxxxxxxxxxxxx'
     monobank = Monobank(token)
 
-    client_name, webhook_url, accounts = monobank.client_info()
-    print(client_name)
-    print(webhook_url)
+    client_info = monobank.client_info()
+    print(client_info)
+    print(client_info.webHookUrl)
 
-    for account in accounts:
+    for account in client_info.accounts:
         print(f'{account.card}: {account}')
         statements = monobank.statements(account.id, (datetime.now() - timedelta(days=6)).date())
         print(*statements, sep='\n')

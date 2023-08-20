@@ -2,7 +2,7 @@ TAG=`python3 setup.py --version`
 
 lint:
 	@printf "==> linting...\n"
-	@python3 -m flake8 --select=DUO pymstodo
+	@python3 -m ruff check "$(CURDIR)"
 
 pub:
 	@printf "==> publishing...\n"

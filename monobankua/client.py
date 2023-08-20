@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 
+import operator
 from abc import ABC, abstractmethod
 from collections import namedtuple
+from collections.abc import Generator
 from dataclasses import dataclass
 from datetime import datetime
-import operator
+from zoneinfo import ZoneInfo
+
 import requests
+
 from monobankua.sign import SignKey
 
 
@@ -24,6 +28,7 @@ class MonobankUnauthorizedError(MonobankError):
 class MonobankBase(ABC):
     API = 'https://api.monobank.ua'
     UA = 'github.com/inbalboa/python-monobankua'
+    TZ = ZoneInfo('Europe/Kyiv')
 
     @staticmethod
     def _currency_helper(currency_code):
@@ -47,24 +52,24 @@ class MonobankBase(ABC):
 
     @dataclass
     class CurrencyInfo:
-        currencyCodeA: int
-        currencyCodeB: int
+        currencyCodeA: int  # noqa: N815
+        currencyCodeB: int  # noqa: N815
         date: int
-        rateSell: int = 0
-        rateBuy: int = 0
-        rateCross: int = 0
+        rateSell: float = 0  # noqa: N815
+        rateBuy: float = 0  # noqa: N815
+        rateCross: float = 0  # noqa: N815
 
         @property
-        def currencyA(self):
-            return Monobank._currency_helper(self.currencyCodeA)
+        def currency_a(self):
+            return MonobankBase._currency_helper(self.currencyCodeA)
 
         @property
-        def currencyB(self):
-            return Monobank._currency_helper(self.currencyCodeB)
+        def currency_b(self):
+            return MonobankBase._currency_helper(self.currencyCodeB)
 
         @property
         def datetime(self):
-            return datetime.fromtimestamp(self.date)
+            return datetime.fromtimestamp(self.date, tz=MonobankBase.TZ)
 
         def __str__(self):
             rate = {
@@ -73,55 +78,89 @@ class MonobankBase(ABC):
                 'крос-курс': self.rateCross
             }
             rate_view = ', '.join([f'{k} {v}' for k, v in rate.items() if v])
-            return f'{self.datetime} {self.currencyA.name} -> {self.currencyB.name}: {rate_view}'
+            return f'{self.datetime} {self.currency_a.name} -> {self.currency_b.name}: {rate_view}'
 
     @dataclass
-    class Account:
-        id: str
-        currencyCode: int
-        cashbackType: str
-        balance: int
-        creditLimit: int
-        maskedPan: str
-        type: str
-        iban: str
-        sendId: str
+    class ClientInfo:
 
-        @property
-        def currency(self):
-            return Monobank._currency_helper(self.currencyCode)
+        @dataclass
+        class Account:
+            id: str  # noqa: A003
+            sendId: str  # noqa: N815
+            balance: int
+            creditLimit: int  # noqa: N815
+            type: str  # noqa: A003
+            currencyCode: int  # noqa: N815
+            cashbackType: str  # noqa: N815
+            maskedPan: list[str]  # noqa: N815
+            iban: str
 
-        @property
-        def card(self):
-            return f'{self.currency.name} {self.maskedPan[0]} {self.type}'
+            @property
+            def currency(self):
+                return MonobankBase._currency_helper(self.currencyCode)
 
-        @property
-        def send_link(self):
-            return f'https://send.monobank.ua/{self.sendId}'
+            @property
+            def send_link(self):
+                return f'https://send.monobank.ua/{self.sendId}'
+
+            def __str__(self):
+                return f'{self.currency.name} {self.maskedPan[0]} {self.type}'
+
+        @dataclass
+        class Jar:
+            id: str  # noqa: A003
+            sendId: str  # noqa: N815
+            title: str
+            description: str
+            currencyCode: int  # noqa: N815
+            balance: int
+            goal: int
+
+            @property
+            def currency(self):
+                return MonobankBase._currency_helper(self.currencyCode)
+
+            @property
+            def send_link(self):
+                return f'https://send.monobank.ua/{self.sendId}'
+
+            def __str__(self):
+                return self.title
+
+        clientId: str  # noqa: N815
+        name: str
+        webHookUrl: str  # noqa: N815
+        permissions: str
+        accounts: Generator[Account]
+        jars: Generator[Jar]
 
         def __str__(self):
-            return f'{self.balance // 100:g} {self.currency.symbol}'
+            return self.name
 
     @dataclass
     class Statement:
-        id: str
+        id: str  # noqa: A003
         time: int
         description: str
         mcc: int
-        originalMcc: int
+        originalMcc: int  # noqa: N815
         hold: bool
         amount: int
-        operationAmount: int
-        currencyCode: int
-        commissionRate: int
-        cashbackAmount: int
+        operationAmount: int  # noqa: N815
+        currencyCode: int  # noqa: N815
+        commissionRate: int  # noqa: N815
+        cashbackAmount: int  # noqa: N815
         balance: int
-        receiptId: str = None
         comment: str = ''
+        receiptId: str = None  # noqa: N815
+        invoiceId: str = None  # noqa: N815
+        counterEdrpou: str = None  # noqa: N815
+        counterIban: str = None  # noqa: N815
+        counterName: str = None  # noqa: N815
 
         @property
         def datetime(self):
-            return datetime.fromtimestamp(self.time)
+            return datetime.fromtimestamp(self.time, tz=MonobankBase.TZ)
 
         @property
         def income(self):
@@ -129,66 +168,67 @@ class MonobankBase(ABC):
 
         @property
         def currency(self):
-            return Monobank._currency_helper(self.currencyCode)
+            return MonobankBase._currency_helper(self.currencyCode)
 
         @property
         def category(self):
             return self._mcc_helper(self.mcc)
 
         @staticmethod
-        def _mcc_helper(mcc):
+        def _mcc_helper(mcc):  # noqa: C901
             Category = namedtuple('Category', ('name', 'symbol'))
             if mcc in (4011, 4111, 4112, 4131, 4304, 4411, 4415, 4418, 4457, 4468, 4511, 4582, 4722, 4784, 4789, 5962,
                        6513, 7011, 7032, 7033, 7512, 7513, 7519) or mcc in range(3000, 4000):
                 return Category('Подорожі', '🚆')
-            elif mcc in (4119, 5047, 5122, 5292, 5295, 5912, 5975, 5976, 5977, 7230, 7297, 7298, 8011, 8021, 8031, 8049,
+            if mcc in (4119, 5047, 5122, 5292, 5295, 5912, 5975, 5976, 5977, 7230, 7297, 7298, 8011, 8021, 8031, 8049,
                          8050, 8062, 8071, 8099) or mcc in range(8041, 8044):
                 return Category('Краса та медицина', '🏥')
-            elif mcc in (5733, 5735, 5941, 7221, 7333, 7395, 7929, 7932, 7933, 7941, 7991, 7995, 8664)\
+            if mcc in (5733, 5735, 5941, 7221, 7333, 7395, 7929, 7932, 7933, 7941, 7991, 7995, 8664)\
                     or mcc in range(5970, 5974) or mcc in range(5945, 5948) or mcc in range(5815, 5819)\
                     or mcc in range(7911, 7923) or mcc in range(7991, 7995) or mcc in range(7996, 8000):
                 return Category('Розваги та спорт', '🎾')
-            elif mcc in range(5811, 5815):
+            if mcc in range(5811, 5815):
                 return Category('Кафе та ресторани', '🍴')
-            elif mcc in (5297, 5298, 5300, 5311, 5331, 5399, 5411, 5412, 5422, 5441, 5451, 5462, 5499, 5715, 5921):
+            if mcc in (5297, 5298, 5300, 5311, 5331, 5399, 5411, 5412, 5422, 5441, 5451, 5462, 5499, 5715, 5921):
                 return Category('Продукти й супермаркети', '🏪')
-            elif mcc in (7829, 7832, 7841):
+            if mcc in (7829, 7832, 7841):
                 return Category('Кіно', '🎞')
-            elif mcc in (5172, 5511, 5541, 5542, 5983, 7511, 7523, 7531, 7534, 7535, 7538, 7542, 7549)\
+            if mcc in (5172, 5511, 5541, 5542, 5983, 7511, 7523, 7531, 7534, 7535, 7538, 7542, 7549)\
                     or mcc in range(5531, 5534):
                 return Category('Авто та АЗС', '⛽')
-            elif mcc in (5131, 5137, 5139, 5611, 5621, 5631, 5641, 5651, 5655, 5661, 5681, 5691, 5697, 5698, 5699, 5931,
+            if mcc in (5131, 5137, 5139, 5611, 5621, 5631, 5641, 5651, 5655, 5661, 5681, 5691, 5697, 5698, 5699, 5931,
                          5948, 5949, 7251, 7296):
                 return Category('Одяг і взуття', '👖')
-            elif mcc == 4121:
+            if mcc == 4121:
                 return Category('Таксі', '🚕')
-            elif mcc in (742, 5995):
+            if mcc in (742, 5995):
                 return Category('Тварини', '🐈')
-            elif mcc in (2741, 5111, 5192, 5942, 5994):
+            if mcc in (2741, 5111, 5192, 5942, 5994):
                 return Category('Книги', '📚')
-            elif mcc in (5992, 5193):
+            if mcc in (5992, 5193):
                 return Category('Квіти', '💐')
-            elif mcc == 4814:
+            if mcc == 4814:
                 return Category('Поповнення мобільного', '📞')
-            elif mcc == 4829:
+            if mcc == 4829:
                 return Category('Грошові перекази', '💸')
-            elif mcc == 4900:
+            if mcc == 4900:
                 return Category('Комунальні послуги', '🚰')
-            else:
-                return Category('Інше', '❓')
+            return Category('Інше', '❓')
 
         def __str__(self):
             currency = self.currency.symbol
-            amount = f'{self.amount / 100:g} {currency}'
-            balance = f'{self.balance / 100:g} {currency}'
-            cashback = f', кешбек {self.cashbackAmount / 100:g} {currency}' if self.cashbackAmount else ''
-            commission = f', комісія {self.commissionRate / 100:g} {currency}' if self.commissionRate else ''
+            amount = f'{self.amount / 100:n} {currency}'
+            balance = f'{self.balance / 100:n} {currency}'
+            cashback = f', кешбек {self.cashbackAmount / 100:n} {currency}' if self.cashbackAmount else ''
+            commission = f', комісія {self.commissionRate / 100:n} {currency}' if self.commissionRate else ''
             category_symbol = '💸' if self.income else self.category.symbol
             datetime = self.datetime.strftime('%d.%m.%Y %H:%M')
             comment = (f' «{self.comment}»' if self.comment else '').replace('\n', ' ')
             description = self.description.replace('\n', ' ')
-            return f'{datetime} {category_symbol} '\
+            return (
+                f'{datetime} {category_symbol} '
                 f'{description}{comment}: {amount}{cashback}{commission}. Баланс: {balance}'
+            )
 
     @classmethod
     def _get_url(cls, path):
@@ -196,7 +236,7 @@ class MonobankBase(ABC):
 
     @abstractmethod
     def _get_headers(self, path):
-        pass
+        ...
 
     @classmethod
     def _make_request(cls, path, method=None, headers=None, body=None):
@@ -210,43 +250,47 @@ class MonobankBase(ABC):
             message = f'Error {status_code}: {error_description}'
             if status_code == requests.codes.too_many_requests:
                 raise MonobankRateLimitError(message)
-            elif status_code in (requests.codes.unauthorized, requests.codes.forbidden, requests.codes.not_found):
+            if status_code in (requests.codes.unauthorized, requests.codes.forbidden, requests.codes.not_found):
                 raise MonobankUnauthorizedError(message)
-            else:
-                raise MonobankError(message)
+            raise MonobankError(message)
         return raw_data
 
     @classmethod
     def currencies_info(cls):
         currency_info_data = cls._make_request('/bank/currency')
-        currencies_info = [cls.CurrencyInfo(**x) for x in currency_info_data]
-        return currencies_info
+        return [cls.CurrencyInfo(**x) for x in currency_info_data]
 
     def client_info(self):
         path = '/personal/client-info'
         client_info_data = MonobankBase._make_request(path, headers=self._get_headers(path))
-        client_name = client_info_data['name']
-        webhook_url = client_info_data.get('webHookUrl', '')
-        accounts = [self.Account(**x) for x in client_info_data['accounts']]
-        return client_name, webhook_url, accounts
+        accounts = (self.ClientInfo.Account(**x) for x in client_info_data['accounts'])
+        jars = (self.ClientInfo.Jar(**x) for x in client_info_data['jars'])
+        return self.ClientInfo(
+            clientId=client_info_data['clientId'],
+            name=client_info_data['name'],
+            webHookUrl=client_info_data.get('webHookUrl', ''),
+            permissions=client_info_data.get('permissions', ''),
+            accounts=accounts,
+            jars=jars
+        )
 
     def statements(self, account_id, date_from, date_to=None):
         if date_to and date_from > date_to:
-            raise ValueError('Error: begin date > end date')
+            msg = 'Error: begin date > end date'
+            raise ValueError(msg)
 
         date_from_ = date_from.strftime('%s')
         date_to_ = date_to.strftime('%s') if date_to else ''
         path = f'/personal/statement/{account_id}/{date_from_}/{date_to_}'
         statements_data = MonobankBase._make_request(path, headers=self._get_headers(path))
-        statements = [self.Statement(**x) for x in sorted(statements_data, key=operator.itemgetter('time'))]
-        return statements
+        return (self.Statement(**x) for x in sorted(statements_data, key=operator.itemgetter('time'), reverse=True))
 
 
 class Monobank(MonobankBase):
     def __init__(self, token=None):
         self.token = token
 
-    def _get_headers(self, path=None):
+    def _get_headers(self, path=None):  # noqa: ARG002
         header = {}
         if self.token:
             header['X-Token'] = self.token
@@ -264,7 +308,7 @@ class MonobankCorporate(MonobankBase):
     def _get_headers(self, path):
         headers = {
             'X-Key-Id': self.key.key_id,
-            'X-Time': datetime.now().strftime('%s'),
+            'X-Time': datetime.now(tz=MonobankBase.TZ).strftime('%s'),
             'X-Request-Id': self.request_id
         }
         str_to_sign = ''.join((headers['X-Time'], headers['X-Request-Id'], path))
@@ -287,9 +331,10 @@ class MonobankCorporate(MonobankBase):
         if personal:
             permissions += 'p'
         if not permissions:
-            raise MonobankError('Neither statement nor personal permission are requested')
+            msg = 'Neither statement nor personal permission are requested'
+            raise MonobankError(msg)
         headers = {
-            'X-Time': datetime.now().strftime('%s'),
+            'X-Time': datetime.now(tz=MonobankBase.TZ).strftime('%s'),
             'X-Permissions': permissions
         }
         if webhook_url:
