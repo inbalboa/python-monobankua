@@ -19,7 +19,7 @@ def find_version():
 setuptools.setup(
     name='monobankua',
     version=find_version(),
-    author='Sergey Shlyapugin',
+    author='Serhiy Shliapuhin',
     author_email='shlyapugin@gmail.com',
     description='Monobank.ua API client',
     long_description=long_description(),

@@ -2,7 +2,7 @@ TAG=`python3 setup.py --version`
 
 lint:
 	@printf "==> linting...\n"
-	@python3 -m ruff check "$(CURDIR)"
+	@python3 -m ruff check --preview --unsafe-fixes "$(CURDIR)"
 
 pub:
 	@printf "==> publishing...\n"
