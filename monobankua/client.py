@@ -85,11 +85,11 @@ class MonobankBase(ABC):
 
         @dataclass
         class Account:
-            id: str  # noqa: A003
+            id: str
             sendId: str  # noqa: N815
             balance: int
             creditLimit: int  # noqa: N815
-            type: str  # noqa: A003
+            type: str
             currencyCode: int  # noqa: N815
             cashbackType: str  # noqa: N815
             maskedPan: list[str]  # noqa: N815
@@ -108,7 +108,7 @@ class MonobankBase(ABC):
 
         @dataclass
         class Jar:
-            id: str  # noqa: A003
+            id: str
             sendId: str  # noqa: N815
             title: str
             description: str
@@ -139,7 +139,7 @@ class MonobankBase(ABC):
 
     @dataclass
     class Statement:
-        id: str  # noqa: A003
+        id: str
         time: int
         description: str
         mcc: int
@@ -242,7 +242,7 @@ class MonobankBase(ABC):
     def _make_request(cls, path, method=None, headers=None, body=None):
         headers_ = headers or {}
         headers_['User-Agent'] = cls.UA
-        response = requests.request(method or 'GET', cls._get_url(path), headers=headers_, json=body)
+        response = requests.request(method or 'GET', cls._get_url(path), headers=headers_, json=body, timeout=10)
         raw_data = response.json() if response.content else {}
         status_code = response.status_code
         if status_code != requests.codes.ok:
