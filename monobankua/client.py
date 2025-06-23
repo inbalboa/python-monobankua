@@ -264,7 +264,7 @@ class MonobankBase(ABC):
         path = '/personal/client-info'
         client_info_data = MonobankBase._make_request(path, headers=self._get_headers(path))
         accounts = (self.ClientInfo.Account(**x) for x in client_info_data['accounts'])
-        jars = (self.ClientInfo.Jar(**x) for x in client_info_data['jars'])
+        jars = (self.ClientInfo.Jar(**x) for x in client_info_data['jars']) if ('jars' in client_info_data.keys()) else None
         return self.ClientInfo(
             clientId=client_info_data['clientId'],
             name=client_info_data['name'],
