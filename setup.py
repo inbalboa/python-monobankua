@@ -4,17 +4,16 @@ import setuptools
 
 
 def long_description():
-    with Path('README.md').open(encoding='locale') as ld:
-        return ld.read()
+    return Path('README.md').read_text(encoding='utf-8')
 
 
 def find_requires():
-    with Path('requirements.txt').open(encoding='locale') as reqs:
+    with Path('requirements.txt').open(encoding='utf-8') as reqs:
         return reqs.readlines()
 
 
 def find_version():
-    with Path('VERSION').open(encoding='locale') as ver:
+    with Path('VERSION').open(encoding='utf-8') as ver:
         return ver.readline().strip()
 
 
@@ -33,10 +32,14 @@ setuptools.setup(
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
+        'Programming Language :: Python :: 3.15',
         'Programming Language :: Python :: 3 :: Only',
-        'License :: OSI Approved',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],
-    license='GPLv3'
+    license_expression='GPL-3.0-only',
+    license_files=['LICENSE'],
 )
