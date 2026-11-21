@@ -13,6 +13,10 @@ import requests
 from monobankua.sign import SignKey
 
 
+def _timestamp(dt=None):
+    return str(int((dt or datetime.now(tz=MonobankBase.TZ)).timestamp()))
+
+
 class MonobankError(Exception):
     pass
 
@@ -279,8 +283,8 @@ class MonobankBase(ABC):
             msg = 'Error: begin date > end date'
             raise ValueError(msg)
 
-        date_from_ = date_from.strftime('%s')
-        date_to_ = date_to.strftime('%s') if date_to else ''
+        date_from_ = _timestamp(date_from)
+        date_to_ = _timestamp(date_to) if date_to else ''
         path = f'/personal/statement/{account_id}/{date_from_}/{date_to_}'
         statements_data = MonobankBase._make_request(path, headers=self._get_headers(path))
         return (self.Statement(**x) for x in sorted(statements_data, key=operator.itemgetter('time'), reverse=True))
@@ -308,7 +312,7 @@ class MonobankCorporate(MonobankBase):
     def _get_headers(self, path):
         headers = {
             'X-Key-Id': self.key.key_id,
-            'X-Time': datetime.now(tz=MonobankBase.TZ).strftime('%s'),
+            'X-Time': _timestamp(),
             'X-Request-Id': self.request_id
         }
         str_to_sign = ''.join((headers['X-Time'], headers['X-Request-Id'], path))
@@ -334,7 +338,7 @@ class MonobankCorporate(MonobankBase):
             msg = 'Neither statement nor personal permission are requested'
             raise MonobankError(msg)
         headers = {
-            'X-Time': datetime.now(tz=MonobankBase.TZ).strftime('%s'),
+            'X-Time': _timestamp(),
             'X-Permissions': permissions
         }
         if webhook_url:
