@@ -14,7 +14,7 @@ class SignKey:
     def key_id(self):
         public_key = self.signing_key.get_verifying_key()
         uncompressed_public_key = bytearray([0x04]) + (bytearray(public_key.to_string()))
-        return hexlify(hashlib.sha1(uncompressed_public_key).digest())  # noqa: S324
+        return hexlify(hashlib.sha1(uncompressed_public_key).digest())  # ruff: ignore[hashlib-insecure-hash-function]
 
     def sign(self, for_sign):
         sign = self.signing_key.sign(for_sign.encode(), hashfunc=hashlib.sha256)

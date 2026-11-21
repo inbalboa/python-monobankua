@@ -52,12 +52,12 @@ class MonobankBase(ABC):
 
     @dataclass
     class CurrencyInfo:
-        currencyCodeA: int  # noqa: N815
-        currencyCodeB: int  # noqa: N815
+        currencyCodeA: int  # ruff: ignore[mixed-case-variable-in-class-scope]
+        currencyCodeB: int  # ruff: ignore[mixed-case-variable-in-class-scope]
         date: int
-        rateSell: float = 0  # noqa: N815
-        rateBuy: float = 0  # noqa: N815
-        rateCross: float = 0  # noqa: N815
+        rateSell: float = 0  # ruff: ignore[mixed-case-variable-in-class-scope]
+        rateBuy: float = 0  # ruff: ignore[mixed-case-variable-in-class-scope]
+        rateCross: float = 0  # ruff: ignore[mixed-case-variable-in-class-scope]
 
         @property
         def currency_a(self):
@@ -86,13 +86,13 @@ class MonobankBase(ABC):
         @dataclass
         class Account:
             id: str
-            sendId: str  # noqa: N815
+            sendId: str  # ruff: ignore[mixed-case-variable-in-class-scope]
             balance: int
-            creditLimit: int  # noqa: N815
+            creditLimit: int  # ruff: ignore[mixed-case-variable-in-class-scope]
             type: str
-            currencyCode: int  # noqa: N815
-            cashbackType: str  # noqa: N815
-            maskedPan: list[str]  # noqa: N815
+            currencyCode: int  # ruff: ignore[mixed-case-variable-in-class-scope]
+            cashbackType: str  # ruff: ignore[mixed-case-variable-in-class-scope]
+            maskedPan: list[str]  # ruff: ignore[mixed-case-variable-in-class-scope]
             iban: str
 
             @property
@@ -109,10 +109,10 @@ class MonobankBase(ABC):
         @dataclass
         class Jar:
             id: str
-            sendId: str  # noqa: N815
+            sendId: str  # ruff: ignore[mixed-case-variable-in-class-scope]
             title: str
             description: str
-            currencyCode: int  # noqa: N815
+            currencyCode: int  # ruff: ignore[mixed-case-variable-in-class-scope]
             balance: int
             goal: int
 
@@ -127,9 +127,9 @@ class MonobankBase(ABC):
             def __str__(self):
                 return self.title
 
-        clientId: str  # noqa: N815
+        clientId: str  # ruff: ignore[mixed-case-variable-in-class-scope]
         name: str
-        webHookUrl: str  # noqa: N815
+        webHookUrl: str  # ruff: ignore[mixed-case-variable-in-class-scope]
         permissions: str
         accounts: Generator[Account]
         jars: Generator[Jar]
@@ -143,20 +143,20 @@ class MonobankBase(ABC):
         time: int
         description: str
         mcc: int
-        originalMcc: int  # noqa: N815
+        originalMcc: int  # ruff: ignore[mixed-case-variable-in-class-scope]
         hold: bool
         amount: int
-        operationAmount: int  # noqa: N815
-        currencyCode: int  # noqa: N815
-        commissionRate: int  # noqa: N815
-        cashbackAmount: int  # noqa: N815
+        operationAmount: int  # ruff: ignore[mixed-case-variable-in-class-scope]
+        currencyCode: int  # ruff: ignore[mixed-case-variable-in-class-scope]
+        commissionRate: int  # ruff: ignore[mixed-case-variable-in-class-scope]
+        cashbackAmount: int  # ruff: ignore[mixed-case-variable-in-class-scope]
         balance: int
         comment: str = ''
-        receiptId: str = None  # noqa: N815
-        invoiceId: str = None  # noqa: N815
-        counterEdrpou: str = None  # noqa: N815
-        counterIban: str = None  # noqa: N815
-        counterName: str = None  # noqa: N815
+        receiptId: str = None  # ruff: ignore[mixed-case-variable-in-class-scope]
+        invoiceId: str = None  # ruff: ignore[mixed-case-variable-in-class-scope]
+        counterEdrpou: str = None  # ruff: ignore[mixed-case-variable-in-class-scope]
+        counterIban: str = None  # ruff: ignore[mixed-case-variable-in-class-scope]
+        counterName: str = None  # ruff: ignore[mixed-case-variable-in-class-scope]
 
         @property
         def datetime(self):
@@ -175,7 +175,7 @@ class MonobankBase(ABC):
             return self._mcc_helper(self.mcc)
 
         @staticmethod
-        def _mcc_helper(mcc):  # noqa: C901
+        def _mcc_helper(mcc):  # ruff: ignore[complex-structure]
             Category = namedtuple('Category', ('name', 'symbol'))
             if mcc in {4011, 4111, 4112, 4131, 4304, 4411, 4415, 4418, 4457, 4468, 4511, 4582, 4722, 4784, 4789, 5962,
                        6513, 7011, 7032, 7033, 7512, 7513, 7519} or mcc in range(3000, 4000):
@@ -290,7 +290,7 @@ class Monobank(MonobankBase):
     def __init__(self, token=None):
         self.token = token
 
-    def _get_headers(self, path=None):  # noqa: ARG002
+    def _get_headers(self, path=None):  # ruff: ignore[unused-method-argument]
         header = {}
         if self.token:
             header['X-Token'] = self.token
